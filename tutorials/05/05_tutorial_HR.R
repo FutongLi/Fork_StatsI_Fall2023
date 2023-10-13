@@ -5,7 +5,7 @@
 getwd()
 
 # Set working directory 
-setwd("/Users/hannahfrank/StatsI_Fall2023_prep")
+setwd("/Users/poisson/Documents/GitHub/Fork_Statsl Fall2023")
 getwd()
 
 # Agenda 
@@ -48,6 +48,9 @@ wb <- wb(country=c("AF","BRA","ITA","NGA","SWE","UGA"),
                      "SH.DYN.MORT"), # Mortality rate, under-5 (per 1,000 live births) 
          startdate = 2000, enddate = 2020)
 
+# Api is conmmunicator between you and database
+# every data providers has different type of data
+
 # Data formats--Wide and long
 # https://www.statology.org/long-vs-wide-data/
 
@@ -56,6 +59,7 @@ wb_re <- reshape(wb[, c("country","iso3c","date","indicatorID","value")], # df
                  timevar = "indicatorID", # New columns
                  idvar = c("country","date","iso3c"), # Identifiers for rows
                  direction = "wide")
+View(wb_re)
 
 # Load Quality of Government data
 qog <- read_csv("https://www.qogdata.pol.gu.se/data/qog_bas_ts_jan23.csv")
@@ -228,7 +232,7 @@ scatter <- ggplot(data = df_na,
         legend.position = c(0.85, 0.85)) # Change position of legend
 ggsave(scatter, file = "tutorials/05/scatter.png")
 scatter
-
+ 
 # (d.) Regression analysis -----
 
 # Fit model
@@ -248,3 +252,5 @@ stargazer(model)
 # Fit model
 model <- lm(mort ~ democracy, data=df_na)
 summary(model)
+
+# 的i comparison auto, xx chldren fewer
