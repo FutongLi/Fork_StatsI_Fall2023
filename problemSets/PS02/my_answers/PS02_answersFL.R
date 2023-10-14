@@ -7,6 +7,7 @@
 setwd("/Users/poisson/Documents/GitHub/Fork_Statsl Fall2023")
 getwd()
 rm(list=ls())
+library(tidyverse)
 
 # Question 1: Political Science
 
@@ -20,6 +21,7 @@ bribe_data
 r <- apply(bribe_data, 1, sum)
 c <- apply(bribe_data, 2, sum)
 r
+c
 fe_all <- numeric()
 chisq <- 0
 fe <- 0
@@ -54,7 +56,9 @@ z_all <- numeric()
 for (i in seq(1:nrow(bribe_data))) {
   for (j in seq(1:ncol(bribe_data))) {
     z = (bribe_data[i,j] - fe_all[i, j]) / 
-         sqrt(fe_all[i,j] * (1- (r[i] / sum(bribe_data))) * ( 1- (c[j] / sum(bribe_data))))
+         (sqrt
+          (fe_all[i,j] * (1- (r[i] / sum(bribe_data)))
+            * ( 1- (c[j] / sum(bribe_data)))))
     z_all <- c(z_all, z)
   }}
 z_all <- matrix(z_all, nrow = 2, ncol = 3, byrow = TRUE)
@@ -62,7 +66,9 @@ print(z_all)
 
 # check standardized residuals
 x_sq$stdres
-
+ls(x_sq)
+chisq.test(bribe_data[])$stdres
+?chisq.test
 
 ## Question 2: Economics
 
