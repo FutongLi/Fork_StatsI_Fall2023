@@ -48,15 +48,18 @@ cor.level <- c(0, .1, .2, .3, .4, .5, .6, .7, .8, .9, .99)
 par.est.ov <- matrix(NA, nrow = reps, ncol = length(cor.level)) 
 
 for(j in 1:length(cor.level)){ # Start the j loop
-  for(i in 1:reps){ # Start the loop
-    #i <- 1
-    #j <- 1
+  for(i in 1:reps){ # Start the i loop
+    # i <- 1
+    # j <- 1
     X.corr <- matrix(c(1, cor.level[j], cor.level[j], 1), nrow = 2, ncol = 2)
     X <- rmvnorm(n, mean = c(0, 0), sigma = X.corr) # Create two correlated 
     X1 <- X[ , 1]                                   # independent variables
     X2 <- X[ , 2]
+    
     Y <- b0 + b1*X1 + b2*X2 + rnorm(n, 0, 1) # The true DGP, with N(0, 1) error
+    
     model <- lm(Y ~ X1) # Estimate OLS model
+    
     par.est.ov[i, j] <- model$coef[2] # Put the estimate for the coefficient on
                                       # X1 in column j
   } # End the i loop
@@ -67,7 +70,7 @@ par.est.ov
 
 # Get mean of estimates
 # True b1 is 0.5
-mean(par.est.ov[ , 1]) # r=0
+mean(par.est.ov[ , 1]) # r=0 correlation level
 mean(par.est.ov[ , 2]) # r=0.1
 mean(par.est.ov[ , 3]) # r=0.2
 mean(par.est.ov[ , 4]) # r=0.3
@@ -89,6 +92,7 @@ legend(0, 12, # Add legend
        legend=c("r=0","r=0.2","r=0.5","r=0.99"),
        col=c("black","gray","orange","red"),
        pch=1) 
+# bias would be huge when r incresase
 
 # Cross-validation (Chapter 9.3) ---------
 
@@ -126,7 +130,7 @@ diag(rand.vcv) <- 1
 
 # Create 20 uncorrelated variables 
 rand.data <- as.data.frame(rmvnorm(1000, mean = rep(0, times = 20),
- sigma = rand.vcv))
+ sigma = rand.vcv)). # generate variables that are unrelated with each other
 
 # Rename columns
 colnames(rand.data) <- c("y", "x1", "x2", "x3", "x4", "x5", "x6", "x7", 

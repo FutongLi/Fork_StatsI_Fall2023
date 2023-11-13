@@ -21,7 +21,7 @@ pkgTest <- function(pkg){
     sapply(pkg,  require,  character.only = TRUE)
     }
 
-# Load any necessary packages
+# Load any necessary packages(several)
 lapply(c("stargazer", "vioplot", "arm"),  pkgTest)
 
 # Set working directory for current folder
@@ -57,8 +57,9 @@ getwd()
 # Born in country (brncntr), 1: Yes, 2: No
 
 # Only include Ireland and relevant variables. 
-df <- read.csv("../../datasets/ESS10.csv")
+df <- read.csv("/Users/poisson/Documents/Trinity/ESS10/ESS10.csv")
 df_s <- df[df$cntry=="IE", c("euftf","edlvdie","eduyrs","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
+head(df_s)
 View(df_s)
 
 # Reverse euftf, to measure euroscepticism more intuitively
@@ -84,7 +85,9 @@ levels(df_s$edu_cat)
 typeof(df_s$edu_cat)
 
 # Record missing values
-df_s[(df_s == -67) | (df_s == -78) | (df_s == -89) | (df_s == 77) | (df_s == 88) | (df_s == 99) | (df_s == 5555) | (df_s == 7777) | (df_s == 8888) | (df_s == 9999)] <- NA
+df_s[(df_s == -67) | (df_s == -78) | (df_s == -89) |
+       (df_s == 77) | (df_s == 88) | (df_s == 99) | 
+       (df_s == 5555) | (df_s == 7777) | (df_s == 8888) | (df_s == 9999)] <- NA
 
 # Descriptive plots
 vioplot(df_s$euftf_re ~ df_s$edu_cat)

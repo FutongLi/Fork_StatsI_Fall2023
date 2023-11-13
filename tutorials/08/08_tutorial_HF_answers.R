@@ -95,7 +95,7 @@ write.csv(df, "df_income_mortality.csv")
 # the Quality of Government dataset. 
 # Alternatively, add a variable from a new data source. 
 
-# Load zipped data from url
+# how to Load zipped data from url aviod load file locally and mannualy 
 temp <- tempfile(fileext = ".zip") # Initiate temporary file
 # Download zip as temporary file
 download.file("https://ucdp.uu.se/downloads/ged/ged231-csv.zip", temp, mode="wb")
@@ -118,7 +118,7 @@ View(ucdp)
 
 # Load sav data file 
 
-# Install required package
+# Install required package for returning specifically data in sav data file
 if(!require(haven)){
   install.packages("haven")
   library(haven)}
@@ -149,6 +149,7 @@ View(df)
 # How to aggregate data?
 # Which variables do we need?
 ucdp[,c("country", "year", "best")] 
+# best: The best (most likely) estimate of total fatalities resulting from integer an event
 
 # Aggregate ucdp from event to the country-year level. 
 ucdp_agg <- aggregate(ucdp$best, # Variable to aggregate
@@ -189,7 +190,7 @@ write.csv(df, "df_income_mortality_best.csv")
 df <- read_csv("df_income_mortality_best.csv")
 View(df)
 
-# Get unique countries in df
+# Get unique countries in df (pakage dplyr requires)
 df_uni <- select(df, country) # Select variable
 df_uni <- distinct(df_uni, country) # Get unique values
 df_uni
@@ -205,6 +206,7 @@ df_s
 
 # Get the mean income and max child mortality for each year
 df_grouped <- group_by(df, date) # Group by year
+df_grouped
 df_mean_inc <- summarize(df_grouped, 
                          n=n(), # Counts
                          mean_inc=mean(gdp_per_cap), # Mean
@@ -212,6 +214,8 @@ df_mean_inc <- summarize(df_grouped,
 df_mean_inc
 
 # What about missing values?
+# we can ignore missing values, exclude the rows of missing values using
+# na.rm()
 ?mean
 # Get the mean income and max child mortality for each year
 df_grouped <- group_by(df, date) # Group by year
@@ -231,15 +235,16 @@ sum(is.na(df$mort))
 df_na <- replace(df, is.na("gdp_per_cap"), 0) # one variable
 df_na <- df %>% replace(is.na(.), 0) # all variables
 
-# Option II: Replace missing values with mean
+# Option II: Replace missing values with mean(may cause non-resonable outlier)
 df_na <- df # Copy
 ?replace_na
 df_na$gdp_per_cap <- replace_na(data=df_na$gdp_per_cap, 
                                 replace=mean(df_na$gdp_per_cap, # Value to replace NA with
                                              na.rm = TRUE))
 
-# Option III: Replace missing values with group mean
+# Option III: Replace missing values with group mean(best estimator)
 df_na <- group_by(df_na, country) # Group
+df_na
 df_na <- mutate(df_na, # Replace with mean if value is missing
                 sec_enrol = ifelse(is.na(sec_enrol), 
                                    mean(sec_enrol, na.rm = TRUE), 
@@ -249,6 +254,8 @@ df_na <- mutate(df_na, # Replace with mean if value is missing
 # ifelse(test, yes, no) 
 # --> if is.na is True, replace with mean,
 # if is.na is False, replace with value
+
+
 
 # Re-coding variables, in Base R
 # Create categorical income variable
@@ -269,6 +276,8 @@ levels(df_na$income_cat)
 
 # Re-coding variables, in tidyverse
 # Create categorical income variable
+df_na$gdp_per_cap
+?quantile
 quantile(df_na$gdp_per_cap) # Check quantiles
 df_na <- mutate(df_na, income_cat2=cut(gdp_per_cap, # Variable
                                        breaks=quantile(df_na$gdp_per_cap), # Breaks

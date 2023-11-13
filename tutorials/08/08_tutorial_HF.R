@@ -91,6 +91,8 @@ write.csv(df, "df_income_mortality.csv")
 # the Quality of Government dataset. 
 # Alternatively, add a variable from a new data source. 
 
+ucdp <- read_csv("https://ucdp.uu.se/downloads/index.html#ged_global")
+
 # Load some data that you find interesting. 
 # What is the level of analysis? 
 # Or rather, what is the 'unit' of each row?
