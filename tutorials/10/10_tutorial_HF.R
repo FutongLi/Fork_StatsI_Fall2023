@@ -57,7 +57,7 @@ getwd()
 # Born in country (brncntr), 1: Yes, 2: No
 
 # Only include Ireland and relevant variables. 
-df <- read.csv("../../datasets/ESS10.csv")
+df <- read.csv("/Users/poisson/Documents/GitHub/Fork_Statsl Fall2023/datasets/ESS10/ESS10.csv")
 df_s <- df[df$cntry=="IE", c("euftf","edlvdie","eduyrs","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
 View(df_s)
 
@@ -65,7 +65,7 @@ View(df_s)
 df_s["euftf_re"] = 10 - df_s[ ,c("euftf")]
 
 # Categorize education levels
-df_s["edu_cat"] <- NA
+df_s["edu_cat"] <- NA # add a new column to store values for educ levels
 df_s[(df_s$edlvdie==1) | (df_s$edlvdie==2) | (df_s$edlvdie==3) | (df_s$edlvdie==4), c("edu_cat")] <- 1 # Junior Cycle
 df_s[(df_s$edlvdie==5) | (df_s$edlvdie==6) | (df_s$edlvdie==7) | (df_s$edlvdie==8) | (df_s$edlvdie==9), c("edu_cat")] <- 2 # Leaving Certificate 
 df_s[(df_s$edlvdie==10) | (df_s$edlvdie==11) | (df_s$edlvdie==12), c("edu_cat")] <- 3 # Advanced Certificate
@@ -82,17 +82,19 @@ df_s$edu_cat <- factor(df_s$edu_cat,
                                   "Postgraduate Degree"))
 levels(df_s$edu_cat)
 typeof(df_s$edu_cat)
+table(df_s$edu_cat) # just to confirm our recording works
 
 # Record missing values
 df_s[(df_s == -67) | (df_s == -78) | (df_s == -89) | (df_s == 77) | (df_s == 88) | (df_s == 99) | (df_s == 999) | (df_s == 5555) | (df_s == 7777) | (df_s == 8888) | (df_s == 9999)] <- NA
 
 # Save dataset
-write.csv(df_s, "../../datasets/ess_euroscepticism.csv")
+write.csv(df_s, "/Users/poisson/Documents/GitHub/Fork_Statsl Fall2023/datasets/ESS10/ESS10_euroscepticism.csv")
 
 # Initial investigation ----------
-df <- read.csv("../../datasets/ess_euroscepticism.csv", row.names="X")
+df <- read.csv("/Users/poisson/Documents/GitHub/Fork_Statsl Fall2023/datasets/ESS10/ESS10_euroscepticism.csv", row.names="X")
 View(df)
 is.factor(df$edu_cat)
+table(df$edu_cat)
 
 # Convert into factor variable
 df$edu_cat <- factor(df$edu_cat)
@@ -100,7 +102,8 @@ is.factor(df$edu_cat)
 
 # Descriptive plots
 par(mar = c(5, 5, 2, 2)) # Change margins in plot manually
-vioplot(df$euftf_re ~ df$edu_cat)
+# 底边距为5，左边距为5，顶边距为2，右边距为2。这样的设置可以影响图形的布局
+vioplot(df$euftf_re ~ df$edu_cat) # show actual variation as well 
 plot(df$edlvdie,df$euftf_re)
 plot(jitter(df$edlvdie,2),jitter(df$euftf_re,2))
 
@@ -146,6 +149,9 @@ model1 <- lm(euftf_re~edlvdie,data=df)
 summary(model1)
 
 # What is the prediction equation?
+# Hat, Eurosceptcism = 4.47520 -0.02669 * education years
+# get all f test for all coefficients
+
 
 # Categorical independent variable (manually)
 
@@ -168,7 +174,7 @@ summary(model1)
 
 # Categorical independent variable, using factor variales
 is.factor(df$edu_cat)
-model1 <- lm(euftf_re~edu_cat,data=df)
+model1 <- lm(euftf_re~edu_cat,data=df) # reference variable is chosen randomly based on the first column
 summary(model1)
 
 # Change reference category
@@ -185,6 +191,8 @@ model1 <- lm(euftf_re~edu_cat,data=df)
 summary(model1) 
 
 # Which hypothesis test can we interpret?
+# we did t and f test
+
 # What is the t-test for individual coefficients?
 # What is the F-test for all coefficients?
 
@@ -196,8 +204,10 @@ summary(model1)
 model2 <- lm(euftf_re~hinctnta,data=df)
 summary(model2)
 
+
 # What is the prediction equation?
 # Which interpretations can we make?
+# we can not assume it is different from 0
 
 # (3) Hypothesis 3 --------------
 
@@ -209,6 +219,8 @@ summary(model3)
 
 # What is the prediction equation?
 # Which interpretations can we make?
+# tiny P value, reject null hypothesis  that the slope is 0
+# as we only have one iv, so F = T 
 
 # (4) Hypothesis 4 --------------
 
@@ -236,7 +248,8 @@ nobs(model_eco) # Number of observations in model
 # to remove incomplete cases
 
 # When comparing models, always make sure models
-# are comparable aka use the same sample.
+# are comparable aka use the same sample. 
+# Otherwise, nobs(model1) != nobs(model_eco)
 
 # The easiest solution is to remove rows with missing values
 df_na <- df[complete.cases(df), ] 
@@ -254,6 +267,8 @@ model_eco <- lm(euftf_re~edlvdie + hinctnta,data=df_na)
 summary(model_eco)
 
 # What is the prediction equation?
+# Eu =  4.203820-0.013624*edu - -0.006543*income
+
 # Which interpretations can we make?
 
 # Add political dimension
@@ -267,6 +282,8 @@ model_cul <- lm(euftf_re~edlvdie + hinctnta + trstplt + imwbcnt, data=df_na)
 summary(model_cul)
 
 # Which interpretations can we make?
+#
+
 
 # Add socio-economic variables 
 model_final <- lm(euftf_re~edlvdie + hinctnta + trstplt + imwbcnt + gndr + agea + brncntr, data=df_na)
