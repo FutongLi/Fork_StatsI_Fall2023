@@ -40,7 +40,7 @@ getwd()
 # What is the relationship between education and Euroscepticism?
 
 # Load data
-df <- read.csv("../../datasets/ess_euroscepticism.csv", row.names="X")
+df <- read.csv("/Users/poisson/Documents/GitHub/Fork_Statsl Fall2023/datasets/ESS10/ESS10_euroscepticism.csv", row.names="X")
 View(df)
 
 # Convert categorical variables into factor 
@@ -52,12 +52,13 @@ df$brncntr <- factor(df$brncntr, labels = c("Born in country", "Not born in coun
 
 # Complete case analysis
 df_na <- df[complete.cases(df), ] 
+View(df_na) # index not start from 1
 
 # Reset index
 rownames(df_na) <- 1:nrow(df_na) 
 
 # Final model
-model_final <- lm(euftf_re~edlvdie + 
+model_final <- lm(euftf_re~eduyrs + 
                            hinctnta + 
                            trstplt + 
                            imwbcnt + 
@@ -71,21 +72,27 @@ summary(model_final)
 ### Cook's Distance ###
 # Difference in predicted values when observation
 # i is included and not included
-# Threshold > 4/(n-k-1)
+# Threshold > 4/(n-k-1) 
+# k for the number of independent varibales
 
 # Get Cook's Distance for all observations
 cooks_d <- cooks.distance(model_final)
 cooks_d
+# each ob has its cooks distance 
+# so we can plot instead of analysing the giant list 
 
 # Plot 
 par(mar=c(5,4,3,3)) # Reset figure margins
+# bottom right, top, left
 plot(model_final, which=4)
 
 # Get top 10 highest Cook's Distance values
 head(sort(cooks_d, decreasing=TRUE),10)
+# defalt is 5
   
 # Calculate threshold
 thres <- 4/(nobs(model_final)-(length(coef(model_final))-1)-1)
+# minus extra 1
 
 # Get observations above threshold
 which(sort(cooks_d, decreasing=TRUE)>thres)
@@ -94,14 +101,14 @@ which(sort(cooks_d, decreasing=TRUE)>thres)
 # Investigate case by case. Coding error? Omitted variables?
 
 # Subsetting data frames, df[row,column]
+df_na[159,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
+model_final$fitted.values[159] # Predicted outcome
+
+df_na[458,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
+model_final$fitted.values[458] # Predicted outcome
+
 df_na[263,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
 model_final$fitted.values[263] # Predicted outcome
-
-df_na[650,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
-model_final$fitted.values[650] # Predicted outcome
-
-df_na[871,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
-model_final$fitted.values[871] # Predicted outcome
 
 ### Difference in betas ####
 # Difference in coefficients when observation 
@@ -114,12 +121,13 @@ dfbeta <- dfbeta(model_final)
 View(dfbeta)
 
 # Print results for some observations
-dfbeta[1, c("edlvdie")]
-dfbeta[2, c("edlvdie")]
-sprintf("%.10f", dfbeta[2, c("edlvdie")])
+dfbeta[1, c("eduyrs")]
+dfbeta[2, c("eduyrs")]
+sprintf("%.10f", dfbeta[1, c("eduyrs")])
+sprintf("%.10f", dfbeta[2, c("eduyrs")])
 
 # Find maximum absolute values for each coefficient 
-dfbeta[,c("edlvdie")][which.max(abs(dfbeta[,c("edlvdie")]))]
+dfbeta[,c("eduyrs")][which.max(abs(dfbeta[,c("eduyrs")]))]
 dfbeta[,c("hinctnta")][which.max(abs(dfbeta[,c("hinctnta")]))]
 dfbeta[,c("trstplt")][which.max(abs(dfbeta[,c("trstplt")]))]
 dfbeta[,c("imwbcnt")][which.max(abs(dfbeta[,c("imwbcnt")]))]
@@ -128,13 +136,11 @@ dfbeta[,c("imwbcnt")][which.max(abs(dfbeta[,c("imwbcnt")]))]
 # Investigate case by case. Coding error? Omitted variables?
 
 # Subsetting data frames, df[row,column]
-df_na[756,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
-model_final$fitted.values[756] # Predicted outcome
 
-df_na[404,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
+df_na[404,c("euftf_re","eduyrs","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
 model_final$fitted.values[404] # Predicted outcome
 
-df_na[344,c("euftf_re","edlvdie","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
+df_na[344,c("euftf_re","eduyrs","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
 model_final$fitted.values[344] # Predicted outcome
 
 ### Leverage versus residual plot ###
@@ -165,15 +171,18 @@ plot(model_final, which=2)
 
 # Residual versus fitted plot
 plot(model_final, which=1)
+# line is close to zero when normal distribution
 
 # What to do if labels of observations are overlapping?
 which(model_final$residuals>6.3 & model_final$fitted.values<4.5)
+# all plots above are from Car pacaage
+
 
 ### Linearity ###
 # The effect between X and Y is linear
 
-# Scatter plots 
-plot(df_na$edlvdie,jitter(df_na$euftf_re,2))
+# Scatter plots # continuous varibale plots are key points
+plot(df_na$eduyrs,jitter(df_na$euftf_re,2))
 plot(df_na$hinctnta,jitter(df_na$euftf_re,2))
 plot(df_na$trstplt,jitter(df_na$euftf_re,2))
 plot(df_na$imwbcnt,jitter(df_na$euftf_re,2))
@@ -182,7 +191,8 @@ plot(df_na$agea,jitter(df_na$euftf_re,2))
 # Residual plot
 residualPlots(model_final)
 
-# Add a quadratic term for trust in politics
+# Add a quadratic term(二次项) for trust in politics
+# why improve model fit
 df_na$trstplt_trstplt <- df_na$trstplt^2
 
 # Fit model
@@ -200,10 +210,11 @@ summary(model_quad)
 # Independent variables are strongly correlated
 
 # Correlation matrix
-cor(df_na[, c("edlvdie","hinctnta","trstplt","imwbcnt","agea")])
+cor(df_na[, c("eduyrs","hinctnta","trstplt","imwbcnt","agea")])
 
 # Variance Inflation Factor
 vif(model_final)
+# vif > 10 = problem = adding index with variable combination
 
 # Create a variable with high correlation
 cor(df_na$trstplt,df_na$imwbcnt)
@@ -212,7 +223,7 @@ cor(df_na$trust_att,df_na$trstplt)
 cor(df_na$trust_att,df_na$imwbcnt)
 
 # Refit model with highly correlated variables
-model_collin <- lm(euftf_re~edlvdie + 
+model_collin <- lm(euftf_re~eduyrs + 
                    hinctnta + 
                    trstplt + 
                    imwbcnt +

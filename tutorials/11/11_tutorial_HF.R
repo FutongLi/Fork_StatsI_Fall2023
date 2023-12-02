@@ -158,6 +158,7 @@ summary(model6)
 
 # Fit model
 model1 <- lm(euftf_re~edu_cat+imwbcnt,data=df_na)
+summary(model1)
 
 # Plot
 plot(df_na$imwbcnt, df_na$euftf_re)
@@ -196,12 +197,12 @@ summary(model_int)
 # How to interpret the intercept?
 # How to interpret the coefficient for education?
 # How to interpret the coefficient for attitudes towards immigration?
-## women with negative attitudes towards immmigration has 1，10288 lower on euroske
 
 # How to interpret the coefficient for gender
+## women with negative attitudes towards immmigration has 1，10288 lower on euroske
 
 # How to interpret the interaction term?
-## hardese to intrepret. 
+## hardest to intrepret. 
 
 # Get slopes for levels of categorical variables
 summary(model_int)$coefficients[3]
@@ -348,3 +349,8 @@ par(mar = c(5, 5, 2, 2)) # Change margins in plot manually
 plot(jitter(df_na$hinctnta,2), jitter(df_na$euftf,2))
 lines(sort(unique(df_na$hinctnta)), preds) # Add predicted outcomes
 
+x1 <- c(1,2,3)
+y1 <- c(4, 5, 6)
+lm(x1~y1)
+
+?lm

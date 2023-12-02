@@ -58,7 +58,8 @@ getwd()
 
 # Only include Ireland and relevant variables. 
 df <- read.csv("/Users/poisson/Documents/GitHub/Fork_Statsl Fall2023/datasets/ESS10/ESS10.csv")
-df_s <- df[df$cntry=="IE", c("euftf","edlvdie","eduyrs","hinctnta","trstplt","imwbcnt","gndr","agea","brncntr")]
+df_s <- df[df$cntry=="IE", c("euftf","edlvdie","eduyrs","hinctnta",
+                             "trstplt","imwbcnt","gndr","agea","brncntr")]
 View(df_s)
 
 # Reverse euftf, to measure euroscepticism more intuitively
