@@ -52,9 +52,9 @@ Prestige <- Prestige[!is.na(Prestige[, 'type']), ]
 # create dummy variables for type
 unique(Prestige$type)
 Prestige$professional <- ifelse(Prestige$type == 'prof', 1, 0)
-Prestige$bc_wc <- ifelse(Prestige$type != 'prof', 1, 0)
 Prestige$professional <- as.factor(Prestige$professional)
-Prestige$bc_wc <- as.factor(Prestige$bc_wc)
+
+
 
 #(b) run a model
 model <- lm(prestige ~ income + professional + income : professional, data = Prestige)
